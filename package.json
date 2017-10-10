@@ -1,0 +1,19 @@
+{
+  "name": "flashcardgen",
+  "version": "1.0.0",
+  "description": "flashcard app for week eleven",
+  "main": "BasicCard.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PiperMH/FlashCard_Gen.git"
+  },
+  "author": "piper hayden",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PiperMH/FlashCard_Gen/issues"
+  },
+  "homepage": "https://github.com/PiperMH/FlashCard_Gen#readme"
+}
