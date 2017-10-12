@@ -3,12 +3,12 @@ function ClozeCard(text,cloze){
 	this.cloze = cloze;
 };
 
-function CCPrototype(){
-	this.clozeMissing = function(){
-		return '${this.text[0]} ... ${this.text[1]}';
+function ClozeCardPrototype(){
+	this.clozeRemove = function(){
+		return this.text[0] + this.text[1];
 	};
 };
 
-CCPrototype.prototype = new CCPrototype();
+ClozeCard.prototype = new ClozeCard();
 
 module.exports = ClozeCard;

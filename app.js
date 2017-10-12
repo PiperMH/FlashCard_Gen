@@ -6,8 +6,8 @@ const fs = require('fs');
 
 var pullCard;
 var currentCard;
-
-
+var count =0;
+//function that creates the opening menu
 function mainMenu(){
 	inquirer.prompt([
 		{
@@ -16,7 +16,7 @@ function mainMenu(){
 			choices: ["create", "use cards"],
 			name: 'menuList'
 		}
-
+//function that takes the user's answer and then runs function related to their choice
 		]).then(function (answer) {
 
 			var msgTime;
@@ -25,12 +25,12 @@ function mainMenu(){
 
 				case 'create':
 				console.log("Lovely, time to make a new flash card!")
-				msgTime =  setTimeout(createCard, 1000);
+				msgTime =  setTimeout(newCard, 1000);
 				break;
 
-				case 'use cards'
+				case 'use cards':
 				console.log("Perfect, time to test your knowledge")
-				msgTime = setTimeout(knoledgeTime,1000);
+				msgTime = setTimeout(askQ,1000);
 				break;
 
 				default:
@@ -43,6 +43,7 @@ function mainMenu(){
 
 mainMenu();
 
+//function that creates a new flash card
 function newCard(){
 	inquirer.prompt([
 
@@ -58,7 +59,7 @@ function newCard(){
 			var cardChoice = app.cardChoice;
 			console.log(cardChoice);
 
-			if(cardChoice === "Basic Card"){
+			if(cardChoice === "Basic Card"){// creates a basic card
 				inquirer.prompt([
 
 				{
@@ -75,7 +76,7 @@ function newCard(){
 				}
 
 
-			]).then(function(card){
+			]).then(function(card){// takes basic card input and assigns it and then writes to library
 
 				var cardObject = {
 					type: "BasicCard",
@@ -89,8 +90,8 @@ function newCard(){
 				inquirer.prompt([
 
 					{
-						type: 'list';
-						message: "Would you like to make another flash card?"
+						type: 'list',
+						message: "Would you like to make another flash card?",
 						choices: ['yes', 'no'],
 						name: 'anotherOne'
 					}
@@ -110,7 +111,7 @@ function newCard(){
 				
 			} else {
 
-				inquirer.prompt([
+				inquirer.prompt([ //takes in input for the cloze card if basic card is not users choice
 
 				{
 					type: 'input',
@@ -119,18 +120,18 @@ function newCard(){
 				},
 
 				{
-					type: 'input'
-					message: 'write the portion of the text you want to hide'
+					type: 'input',
+					message: 'write the portion of the text you want to hide',
 					name: 'cloze'
 				}
 
 
-				]).then(function (card){
+				]).then(function (data){// takes input, assigns, and then write to library
 
 					var cardObject = {
 						type: "ClozeCard",
-						text: card.text,
-						cloze: card.cloze
+						text: data.text,
+						cloze: data.cloze
 					};
 
 					if(cardObject.text.indexOf(cardObject.cloze) !== -1){
@@ -172,4 +173,48 @@ function newCard(){
 		});
 };
 
+
+
+//function used to get the question from the drawnCard in the askQuestions function
+function getQ(card) {
+    if (card.type === "BasicCard") {					
+        drawnCard = new BasicCard(card.front, card.back);	
+        return drawnCard.front;								
+    } else if (card.type === "ClozeCard") {					
+        drawnCard = new ClozeCard(card.text, card.cloze)	
+        return drawnCard.clozeRemove();					
+    }
+};
+
+
+//function to ask questions from all stored card in the library
+function askQ() {
+    if (count < library.length) {		
+        playedCard = getQ(library[count]);	
+        inquirer.prompt([				
+            {
+                type: "input",
+                message: playedCard,
+                name: "question"
+            }
+        ]).then(function (answer) {					
+        	//if the users answer equals .back or .cloze of the playedCard run a message "You are correct."
+            if (answer.question === library[count].back || answer.question === library[count].cloze) {
+                console.log("You are correct.");
+            } else {
+            	//check to see if current card is Cloze or Basic
+                if (drawnCard.front !== undefined) { 
+                    console.log("Sorry, the correct answer was ") + library[count].back + "."; 
+                } else { // otherwise it is a Cloze card
+                    console.log("Sorry, the correct answer was ") + library[count].cloze + ".";
+                }
+            }
+            count++; 		
+            askQ();
+        });
+    } else {
+      	count=0;			
+      	mainMenu();			
+    }
+};
 
